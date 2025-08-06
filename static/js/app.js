@@ -46,7 +46,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 3. Event Listeners ---
     mosSelect.addEventListener('change', handleMosSelection);
-    skillsList.addEventListener('click', handleCopyClick);
+
+    // A single event listener on the parent list uses event delegation. This is
+    // more performant than adding a listener to every single button and placeholder.
+    skillsList.addEventListener('click', (event) => {
+        const copyButton = event.target.closest('.skills-list__copy-btn');
+        if (copyButton) {
+            handleCopyClick(copyButton);
+            return;
+        }
+
+        const placeholder = event.target.closest('.placeholder');
+        if (placeholder) {
+            handlePlaceholderClick(placeholder);
+            return;
+        }
+    });
 
 
     /**
@@ -210,17 +225,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /**
-     * Handles click events on the skills list using event delegation.
-     * @param {Event} event - The click event object.
+     * Handles a click on a placeholder span, making it editable.
+     * @param {HTMLElement} placeholder - The placeholder span element that was clicked.
      */
-    function handleCopyClick(event) {
-        const copyButton = event.target.closest('.skills-list__copy-btn');
-        if (!copyButton) return;
+    function handlePlaceholderClick(placeholder) {
+        // Create an input field to replace the span
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.className = 'placeholder-input';
+        input.value = placeholder.textContent.replace(/\D/g, '') || 1; // Use existing number or default to 1
+        input.style.width = `${(input.value.length + 2)}ch`; // Set width based on content
 
+        // Replace the placeholder span with the new input field
+        placeholder.replaceWith(input);
+        input.focus();
+        input.select();
+
+        // Event listener to save the value when the input loses focus
+        input.addEventListener('blur', () => {
+            savePlaceholderValue(input);
+        });
+
+        // Event listener to save the value when 'Enter' is pressed
+        input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                input.blur(); // Trigger the blur event to save
+            }
+            // Adjust width dynamically as user types
+            input.style.width = `${(input.value.length + 2)}ch`;
+        });
+    }
+
+    /**
+     * Replaces an input field with a styled span containing the new value.
+     * @param {HTMLInputElement} input - The input field to be replaced.
+     */
+    function savePlaceholderValue(input) {
+        const value = input.value.trim();
+        const newPlaceholder = document.createElement('span');
+        newPlaceholder.className = 'placeholder filled'; // Add 'filled' class for styling
+        newPlaceholder.textContent = `[${value || 'Number'}]`; // Fallback if empty
+
+        input.replaceWith(newPlaceholder);
+    }
+
+    /**
+     * Handles the click event on a copy button.
+     * @param {HTMLButtonElement} copyButton - The button that was clicked.
+     */
+    function handleCopyClick(copyButton) {
         const skillItem = copyButton.closest('.skills-list__item');
         const skillTextElement = skillItem.querySelector('.skills-list__text');
 
-        // Replaces the styled placeholder span with the original text for copying.
+        // .innerText correctly reads the rendered text content, including values
+        // from the updated placeholders.
         const textToCopy = skillTextElement.innerText.replace(/\s+/g, ' ').trim();
 
         navigator.clipboard.writeText(textToCopy).then(() => {
