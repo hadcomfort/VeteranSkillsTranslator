@@ -28,7 +28,10 @@
         <section class="selection-area" aria-labelledby="selection-heading">
             <h2 id="selection-heading" class="visually-hidden">Select Your Occupation</h2>
             <form class="selection-form">
-                <label for="mos-select" class="selection-form__label">Choose your Military Occupational Specialty (MOS):</label>
+                <label for="search-input" class="selection-form__label">Filter by title or code:</label>
+                <input type="text" id="search-input" class="selection-form__search" placeholder="e.g., Infantryman or 11B">
+
+                <label for="mos-select" class="selection-form__label sr-only">Choose your Military Occupational Specialty (MOS):</label>
                 <select id="mos-select" class="selection-form__select">
                     <option value="">-- Select an Occupation --</option>
                     <!-- Jinja2 For Loop: This block dynamically generates an <option>
