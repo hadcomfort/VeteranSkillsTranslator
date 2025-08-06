@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Cache DOM Elements ---
     // Caching elements that are frequently accessed prevents repeated, costly
     // DOM lookups, leading to better performance.
+    const searchInput = document.getElementById('search-input');
     const mosSelect = document.getElementById('mos-select');
     const skillsList = document.getElementById('skills-list');
     const skillsContainer = document.getElementById('skills-list-container');
@@ -63,6 +64,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    searchInput.addEventListener('input', filterOccupations);
+
+
+    /**
+     * Filters the occupation dropdown based on user input.
+     */
+    function filterOccupations() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const options = mosSelect.options;
+
+        for (let i = 1; i < options.length; i++) { // Start at 1 to skip the placeholder
+            const option = options[i];
+            const optionText = option.textContent.toLowerCase();
+            const shouldBeVisible = optionText.includes(searchTerm);
+            option.style.display = shouldBeVisible ? '' : 'none';
+        }
+    }
 
     /**
      * Handles the 'change' event on the MOS select dropdown.

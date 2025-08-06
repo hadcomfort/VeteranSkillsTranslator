@@ -2,15 +2,31 @@
   "occupations": [
     {
       "mos": "11B",
-      "title": "Infantryman"
+      "title": "Infantryman (Army)"
     },
     {
       "mos": "35F",
-      "title": "Intelligence Analyst"
+      "title": "Intelligence Analyst (Army)"
     },
     {
       "mos": "68W",
-      "title": "Combat Medic Specialist"
+      "title": "Combat Medic Specialist (Army)"
+    },
+    {
+      "mos": "1N0X1",
+      "title": "All-Source Intelligence Analyst (Air Force)"
+    },
+    {
+      "mos": "3D0X2",
+      "title": "Cyber Systems Operations (Air Force)"
+    },
+    {
+      "mos": "IT",
+      "title": "Information Systems Technician (Navy)"
+    },
+    {
+      "mos": "HM",
+      "title": "Hospital Corpsman (Navy)"
     }
   ],
   "skills": {
@@ -31,6 +47,30 @@
       "Managed and maintained a comprehensive inventory of medical supplies and equipment for a platoon-sized element.",
       "Trained non-medical personnel in basic life-saving techniques, enhancing unit survivability.",
       "Documented patient care and treatment accurately and efficiently, maintaining critical medical records."
+    ],
+    "1N0X1": [
+      "Evaluated and fused intelligence from signals, imagery, and human sources to support mission planning and execution.",
+      "Produced and disseminated over [Number] time-sensitive intelligence reports to tactical and strategic commanders.",
+      "Maintained global situational awareness by monitoring and analyzing geopolitical and military developments.",
+      "Operated and managed advanced intelligence database systems, ensuring data integrity and accessibility."
+    ],
+    "3D0X2": [
+      "Administered and secured server infrastructure and network services for over [Number] users, ensuring 99.9% uptime.",
+      "Implemented and enforced cybersecurity protocols, including vulnerability scanning and patch management, to protect critical assets.",
+      "Automated system administration tasks using PowerShell and Bash scripts, reducing manual effort by [Number]%.",
+      "Provided technical support and troubleshooting for network and system-level issues, resolving tickets within service level agreements."
+    ],
+    "IT": [
+      "Managed and troubleshot secure satellite communication systems, providing reliable voice and data services for fleet operations.",
+      "Administered shipboard local area networks (LANs), managing user accounts, permissions, and network resources for a crew of [Number].",
+      "Installed, configured, and maintained network hardware including routers, switches, and cryptographic equipment.",
+      "Conducted network security monitoring and intrusion detection to defend against cyber threats."
+    ],
+    "HM": [
+      "Provided comprehensive medical and dental services to a ship's crew of [Number], from routine care to emergency response.",
+      "Maintained ship-wide health and sanitation standards through regular inspections and crew training.",
+      "Managed the procurement, storage, and inventory of all medical supplies and pharmaceuticals.",
+      "Assisted medical officers with patient examinations, treatments, and minor surgical procedures."
     ]
   }
 }
