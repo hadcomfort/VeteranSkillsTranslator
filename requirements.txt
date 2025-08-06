@@ -1,0 +1,12 @@
+# ==============================================================================
+#  Project Dependencies
+# ==============================================================================
+#
+#  - Flask: The core web framework for building the application and API.
+#  - pytest: The testing framework used for our automated unit tests.
+#  - python-dotenv: Used to load environment variables from the .env file,
+#    allowing for clean separation of configuration from code.
+#
+Flask
+pytest
+python-dotenv
