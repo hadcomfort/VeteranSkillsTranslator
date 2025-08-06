@@ -23,8 +23,10 @@
 
 import os
 import sqlite3
-from flask import Flask, render_template, g, jsonify
+from flask import Flask, render_template, g, jsonify, request, session
+from werkzeug.security import check_password_hash, generate_password_hash
 from dotenv import load_dotenv
+import functools
 
 # --- Application Setup ---
 
@@ -37,8 +39,91 @@ app = Flask(__name__)
 # because we manually construct the path, but it's good practice as it makes
 # Flask aware of the 'instance' folder.
 app.config.from_mapping(
+    SECRET_KEY=os.getenv('SECRET_KEY', 'dev'), # Default 'dev' key is for development only
     DATABASE=os.path.join(app.instance_path, os.getenv('DATABASE_PATH', 'database.sqlite'))
 )
+
+# --- Auth Blueprint and Routes ---
+
+@app.route('/api/register', methods=['POST'])
+def register():
+    """Registers a new user."""
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    db = get_db()
+    error = None
+
+    if not username:
+        error = 'Username is required.'
+    elif not password:
+        error = 'Password is required.'
+
+    if error is None:
+        try:
+            db.execute(
+                "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+                (username, generate_password_hash(password)),
+            )
+            db.commit()
+        except db.IntegrityError:
+            error = f"User {username} is already registered."
+        else:
+            return jsonify({'message': 'User created successfully'}), 201
+
+    return jsonify({'error': error}), 400
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    """Logs a user in."""
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    db = get_db()
+    error = None
+    user = db.execute(
+        'SELECT * FROM users WHERE username = ?', (username,)
+    ).fetchone()
+
+    if user is None:
+        error = 'Incorrect username.'
+    elif not check_password_hash(user['password_hash'], password):
+        error = 'Incorrect password.'
+
+    if error is None:
+        session.clear()
+        session['user_id'] = user['id']
+        return jsonify({'message': 'Logged in successfully'})
+
+    return jsonify({'error': error}), 400
+
+@app.route('/api/logout')
+def logout():
+    """Logs the current user out."""
+    session.clear()
+    return jsonify({'message': 'Logged out successfully'})
+
+@app.before_request
+def load_logged_in_user():
+    """If a user id is in the session, load the user object from the db."""
+    user_id = session.get('user_id')
+
+    if user_id is None:
+        g.user = None
+    else:
+        g.user = get_db().execute(
+            'SELECT * FROM users WHERE id = ?', (user_id,)
+        ).fetchone()
+
+def login_required(view):
+    """View decorator that redirects anonymous users to the login page."""
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return jsonify({'error': 'Authorization required'}), 401
+        return view(**kwargs)
+    return wrapped_view
+
 
 # --- Database Connection Management ---
 
@@ -81,7 +166,7 @@ def close_db(e=None):
     if db is not None:
         db.close()
 
-# --- Application Routes ---
+# --- Page-serving Routes ---
 
 @app.route("/")
 def index():
@@ -102,6 +187,57 @@ def index():
         app.logger.error(f"Failed to fetch occupations for index page: {e}")
         # Render a simple error message if the database fails.
         return "Error: Could not connect to the database to fetch occupations.", 500
+
+@app.route('/login')
+def login_page():
+    return render_template('login.html')
+
+@app.route('/register')
+def register_page():
+    return render_template('register.html')
+
+@app.route('/profile')
+@login_required
+def profile_page():
+    return render_template('profile.html')
+
+
+@app.route('/api/skills', methods=['GET', 'POST'])
+@login_required
+def saved_skills():
+    """Manages saved skills for the logged-in user."""
+    db = get_db()
+    if request.method == 'POST':
+        data = request.get_json()
+        skill_description = data.get('skill_description')
+        if not skill_description:
+            return jsonify({'error': 'Skill description is required.'}), 400
+
+        db.execute(
+            'INSERT INTO user_saved_skills (user_id, skill_description) VALUES (?, ?)',
+            (g.user['id'], skill_description)
+        )
+        db.commit()
+        return jsonify({'message': 'Skill saved successfully'}), 201
+
+    # GET request
+    skills = db.execute(
+        'SELECT id, skill_description FROM user_saved_skills WHERE user_id = ?',
+        (g.user['id'],)
+    ).fetchall()
+    return jsonify([dict(row) for row in skills])
+
+@app.route('/api/skills/<int:skill_id>', methods=['DELETE'])
+@login_required
+def delete_skill(skill_id):
+    """Deletes a saved skill."""
+    db = get_db()
+    db.execute(
+        'DELETE FROM user_saved_skills WHERE id = ? AND user_id = ?',
+        (skill_id, g.user['id'])
+    )
+    db.commit()
+    return jsonify({'message': 'Skill deleted successfully'})
 
 
 @app.route("/api/mos/<string:mos_code>")

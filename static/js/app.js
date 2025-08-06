@@ -62,6 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
             handlePlaceholderClick(placeholder);
             return;
         }
+
+        const saveButton = event.target.closest('.skills-list__save-btn');
+        if (saveButton) {
+            handleSaveClick(saveButton);
+            return;
+        }
     });
 
     searchInput.addEventListener('input', filterOccupations);
@@ -305,6 +311,30 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Failed to copy text: ', err);
             showCopyFeedback('Failed to copy.');
         });
+    }
+
+    /**
+     * Handles the click event on a save button.
+     * @param {HTMLButtonElement} saveButton - The button that was clicked.
+     */
+    async function handleSaveClick(saveButton) {
+        const skillItem = saveButton.closest('.skills-list__item');
+        const skillTextElement = skillItem.querySelector('.skills-list__text');
+        const skillDescription = skillTextElement.innerText.replace(/\s+/g, ' ').trim();
+
+        const response = await fetch('/api/skills', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ skill_description: skillDescription }),
+        });
+
+        if (response.ok) {
+            showCopyFeedback('Skill saved!');
+        } else if (response.status === 401) {
+            showCopyFeedback('Please log in to save skills.');
+        } else {
+            showCopyFeedback('Error saving skill.');
+        }
     }
 
     /**
