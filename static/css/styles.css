@@ -211,7 +211,40 @@ body {
     padding: 0 var(--spacing-xs);
     border-radius: var(--border-radius-sm);
     font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: inline-block; /* Allows for transform */
 }
+
+.skills-list__text .placeholder:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.skills-list__text .placeholder.filled {
+    /* Style for after a user has entered a value */
+    background-color: var(--color-success);
+    color: white;
+}
+
+.placeholder-input {
+    /* Style for the inline input field */
+    width: 4ch; /* A good starting width */
+    border: none;
+    border-bottom: 2px solid var(--color-primary);
+    background-color: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    text-align: center;
+    color: inherit;
+    padding: 0;
+}
+
+.placeholder-input:focus {
+    outline: none;
+    border-bottom-color: var(--color-accent);
+}
+
 
 .skills-list__copy-btn {
     flex-shrink: 0;
