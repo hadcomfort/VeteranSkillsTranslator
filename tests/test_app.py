@@ -87,7 +87,7 @@ def test_get_skills_success(client):
 
     # Assert: Check the response payload.
     data = response.get_json()
-    assert data['title'] == "Infantryman"
+    assert data['title'] == "Infantryman (Army)"
     assert isinstance(data['skills'], list)
     assert len(data['skills']) == 4 # Based on our sample data.json
     assert "Operated and maintained a variety of small arms and heavy weapons, ensuring operational readiness for missions." in data['skills']
