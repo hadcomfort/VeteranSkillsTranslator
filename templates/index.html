@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Military Skills Translator</title>
+    <!-- Link to the CSS stylesheet. The `url_for` function is a Flask/Jinja2
+         helper that generates the correct URL for static files. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <!-- ARIA Live Region: This element is crucial for accessibility.
+         JavaScript will update its content to announce status changes (e.g.,
+         "Loading...", "Skills loaded.") to screen reader users without
+         disrupting their focus. `aria-live="polite"` ensures announcements
+         do not interrupt the user. -->
+    <div class="visually-hidden" id="sr-announcer" aria-live="polite" aria-atomic="true"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <h1 class="site-header__title">Military Skills Translator</h1>
+            <p class="site-header__subtitle">Turn your military experience into resume-ready bullet points.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="selection-area" aria-labelledby="selection-heading">
+            <h2 id="selection-heading" class="visually-hidden">Select Your Occupation</h2>
+            <form class="selection-form">
+                <label for="mos-select" class="selection-form__label">Choose your Military Occupational Specialty (MOS):</label>
+                <select id="mos-select" class="selection-form__select">
+                    <option value="">-- Select an Occupation --</option>
+                    <!-- Jinja2 For Loop: This block dynamically generates an <option>
+                         for each occupation passed from the Flask backend. This is a
+                         core feature of server-side templating. -->
+                    {% for occupation in occupations %}
+                        <option value="{{ occupation.mos_code }}">{{ occupation.title }} ({{ occupation.mos_code }})</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </section>
+
+        <section class="results-area" aria-labelledby="skills-heading">
+            <!-- Results Heading: `tabindex="-1"` makes this element focusable via
+                 JavaScript. After new skills are loaded, we will programmatically
+                 move focus here, immediately informing screen reader users where
+                 the new content has appeared. -->
+            <h2 id="skills-heading" tabindex="-1" class="results-area__title">Your Translated Skills</h2>
+
+            <!-- The `aria-busy` attribute will be set to "true" by JavaScript
+                 during the fetch operation to inform assistive technologies that
+                 this section is in the process of updating. -->
+            <div id="skills-list-container" class="skills-list-container" aria-busy="false">
+                <p id="results-placeholder" class="results-placeholder">Select an occupation above to see your skills.</p>
+                <ul id="skills-list" class="skills-list">
+                    <!-- Skill items will be dynamically inserted here by JavaScript -->
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Template Element: This is a blueprint for a single skill item.
+         Using a <template> is more performant and secure than building HTML
+         strings in JavaScript. The content is inert until cloned and activated. -->
+    <template id="skill-item-template">
+        <li class="skills-list__item">
+            <p class="skills-list__text"></p>
+            <button type="button" class="skills-list__copy-btn" title="Copy to clipboard">
+                <span class="visually-hidden">Copy skill</span>
+                <!-- Simple inline SVG for the copy icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4 1.5H3a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zM9 2H7v.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V2z"/>
+                </svg>
+            </button>
+        </li>
+    </template>
+
+    <!-- Copy Feedback: This element provides a confirmation message after the
+         user clicks the copy button. It uses `role="status"` to ensure the
+         message is announced by screen readers. -->
+    <div id="copy-feedback" class="copy-feedback" role="status" aria-live="polite"></div>
+
+    <!-- The defer attribute tells the browser to download the script in parallel
+         but execute it only after the HTML has been fully parsed. This is the
+         modern best practice for including scripts. -->
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+
+</body>
+</html>

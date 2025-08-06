@@ -1,0 +1,36 @@
+{
+  "occupations": [
+    {
+      "mos": "11B",
+      "title": "Infantryman"
+    },
+    {
+      "mos": "35F",
+      "title": "Intelligence Analyst"
+    },
+    {
+      "mos": "68W",
+      "title": "Combat Medic Specialist"
+    }
+  ],
+  "skills": {
+    "11B": [
+      "Operated and maintained a variety of small arms and heavy weapons, ensuring operational readiness for missions.",
+      "Led a fire team of [Number] soldiers in complex tactical environments, responsible for their training, welfare, and performance.",
+      "Navigated challenging terrain using maps, compass, and GPS technologies under day and night conditions.",
+      "Communicated effectively using hand signals and radio equipment to coordinate team movements and actions."
+    ],
+    "35F": [
+      "Analyzed and synthesized intelligence from multiple sources to produce actionable reports for command-level decision-making.",
+      "Prepared and delivered more than [Number] intelligence briefings to senior leadership, impacting strategic planning.",
+      "Managed classified materials in compliance with strict security protocols, ensuring information integrity.",
+      "Utilized specialized analytical software to identify patterns and trends in enemy activity."
+    ],
+    "68W": [
+      "Provided emergency medical treatment to casualties in high-pressure combat situations, saving [Number] lives.",
+      "Managed and maintained a comprehensive inventory of medical supplies and equipment for a platoon-sized element.",
+      "Trained non-medical personnel in basic life-saving techniques, enhancing unit survivability.",
+      "Documented patient care and treatment accurately and efficiently, maintaining critical medical records."
+    ]
+  }
+}
