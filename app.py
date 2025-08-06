@@ -43,6 +43,14 @@ app.config.from_mapping(
     DATABASE=os.path.join(app.instance_path, os.getenv('DATABASE_PATH', 'database.sqlite'))
 )
 
+# --- Security Warning for Default Key in Production ---
+#
+# Check if the application is running in a production environment and is still
+# using the default 'dev' secret key. This is a critical security risk. A strong,
+# unique secret key should be set in the .env file for production deployments.
+if os.getenv('FLASK_ENV') == 'production' and app.config['SECRET_KEY'] == 'dev':
+    app.logger.warning('CRITICAL SECURITY WARNING: The default SECRET_KEY is in use in a production environment. Please set a strong, unique key in your .env file.')
+
 # --- Auth Blueprint and Routes ---
 
 @app.route('/api/register', methods=['POST'])
