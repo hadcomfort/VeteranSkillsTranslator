@@ -1,0 +1,27 @@
+# This file prevents local development artifacts from being copied into the
+# Docker image, keeping the image small and clean.
+
+# Ignore the virtual environment
+venv/
+.venv/
+
+# Ignore Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Git directory
+.git/
+.gitignore
+
+# Ignore local configuration and IDE files
+.env
+.idea/
+.vscode/
+
+# Ignore the instance folder, as it will be mounted as a volume
+instance/
+
+# Ignore pytest cache
+.pytest_cache/
