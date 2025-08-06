@@ -58,8 +58,20 @@ def main():
             # Drop existing tables to ensure a fresh start (idempotency).
             # This is useful for development and testing.
             print("Dropping existing tables if they exist...")
+            cursor.execute("DROP TABLE IF EXISTS user_saved_skills")
+            cursor.execute("DROP TABLE IF EXISTS users")
             cursor.execute("DROP TABLE IF EXISTS skills")
             cursor.execute("DROP TABLE IF EXISTS occupations")
+
+            # Create the 'users' table.
+            print("Creating 'users' table...")
+            cursor.execute("""
+                CREATE TABLE users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL
+                )
+            """)
 
             # Create the 'occupations' table.
             # This table stores the Military Occupational Specialty (MOS) codes
@@ -85,6 +97,18 @@ def main():
                     occupation_id INTEGER NOT NULL,
                     description TEXT NOT NULL,
                     FOREIGN KEY (occupation_id) REFERENCES occupations (id) ON DELETE CASCADE
+                )
+            """)
+
+            # Create the 'user_saved_skills' table.
+            # This table links users to the skills they have saved.
+            print("Creating 'user_saved_skills' table...")
+            cursor.execute("""
+                CREATE TABLE user_saved_skills (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    skill_description TEXT NOT NULL,
+                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
                 )
             """)
 

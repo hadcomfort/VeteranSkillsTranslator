@@ -95,21 +95,93 @@ body {
 .site-header {
     background-color: var(--color-primary);
     color: var(--color-background);
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-md) 0;
     margin-bottom: var(--spacing-xl);
-    text-align: center;
 }
 
-.site-header__title {
+.site-header__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-header__title a {
     font-family: var(--font-family-heading);
-    font-size: 2.5rem;
-    margin: 0 0 var(--spacing-sm) 0;
+    font-size: 1.8rem;
+    color: inherit;
+    text-decoration: none;
 }
 
-.site-header__subtitle {
-    font-size: 1.1rem;
-    margin: 0;
-    opacity: 0.9;
+.site-header__nav {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.site-header__nav a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: bold;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+}
+
+.site-header__nav a:hover {
+    background-color: var(--color-primary-dark);
+}
+
+/* --- Auth Forms --- */
+.auth-form {
+    max-width: 400px;
+    margin: var(--spacing-xl) auto;
+    padding: var(--spacing-lg);
+    background: var(--color-surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+.auth-form h2 {
+    text-align: center;
+    font-family: var(--font-family-heading);
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+}
+
+.form-group input {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+}
+
+.btn {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: none;
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.error-message {
+    color: #d90429;
+    margin-top: var(--spacing-md);
+    text-align: center;
 }
 
 /* --- Selection Form --- */
@@ -261,7 +333,13 @@ body {
 }
 
 
-.skills-list__copy-btn {
+.skills-list__actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.skills-list__copy-btn,
+.skills-list__save-btn {
     flex-shrink: 0;
     background-color: transparent;
     border: 1px solid var(--color-border);
@@ -272,13 +350,15 @@ body {
     transition: background-color 0.2s, color 0.2s;
 }
 
-.skills-list__copy-btn:hover {
+.skills-list__copy-btn:hover,
+.skills-list__save-btn:hover {
     background-color: var(--color-secondary);
     color: white;
     border-color: var(--color-secondary);
 }
 
-.skills-list__copy-btn:focus {
+.skills-list__copy-btn:focus,
+.skills-list__save-btn:focus {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
 }
