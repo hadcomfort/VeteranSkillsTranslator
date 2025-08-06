@@ -1,0 +1,67 @@
+# ==============================================================================
+#  Continuous Integration Workflow for the Military Skills Translator
+# ==============================================================================
+#
+#  NAME: Python Application CI
+#
+#  DESCRIPTION:
+#  This GitHub Actions workflow defines the Continuous Integration (CI) pipeline
+#  for the project. It automates the process of testing the application to
+#  ensure that new code changes do not break existing functionality.
+#
+#  TRIGGERS:
+#  - on:push: Runs whenever code is pushed to the 'main' branch.
+#  - on:pull_request: Runs whenever a pull request is opened or updated that
+#    targets the 'main' branch.
+#
+# ==============================================================================
+
+name: Python Application CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+    # --- 1. Checkout Repository ---
+    # This step checks out a copy of your repository onto the runner.
+    - name: Check out repository code
+      uses: actions/checkout@v3
+
+    # --- 2. Set up Python Environment ---
+    # This step sets up a specific version of Python. Using a specific version
+    # ensures that the tests run in a consistent environment every time.
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.9"
+
+    # --- 3. Install Dependencies ---
+    # This step installs the project's dependencies from the requirements.txt file.
+    # It includes caching to speed up subsequent runs.
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # --- 4. Initialize Database ---
+    # This step runs the import script to create and populate the SQLite database.
+    # This is a critical step, as the application tests will fail without a
+    # database to connect to.
+    - name: Initialize the database
+      run: |
+        python scripts/import_data.py
+
+    # --- 5. Run Tests with Pytest ---
+    # This step executes the automated test suite using pytest. If any test
+    # fails, the workflow will fail, immediately notifying developers of a problem.
+    - name: Run tests
+      run: |
+        pytest
