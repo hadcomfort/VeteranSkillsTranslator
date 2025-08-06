@@ -65,9 +65,95 @@ def client(app):
     having to run it on a live web server. This is the standard way to test
 #    Flask applications.
     """
+    # This client can be used to make requests that don't modify the session,
+    # like simple GET requests.
     return app.test_client()
 
-# --- Test Cases ---
+@pytest.fixture
+def runner(app):
+    """
+    A fixture that provides a test runner that can be used to invoke CLI commands.
+    We also use this opportunity to initialize the database for a clean slate
+    before tests run.
+    """
+    # Before yielding, we set up the database.
+    # This ensures every test function gets a clean database.
+    with app.app_context():
+        # This is a simplified way to re-initialize the db for tests.
+        # In a larger app, you might use a dedicated test database or transactions.
+        from scripts.import_data import main as init_db
+        init_db()
+
+    return app.test_cli_runner()
+
+# --- Authentication Test Cases ---
+
+def test_register(client):
+    """Test user registration."""
+    # Test successful registration
+    response = client.post('/api/register', json={
+        'username': 'testuser',
+        'password': 'password123'
+    })
+    assert response.status_code == 201
+    assert 'User created successfully' in response.get_json()['message']
+
+    # Test registering a duplicate username
+    response = client.post('/api/register', json={
+        'username': 'testuser',
+        'password': 'password123'
+    })
+    assert response.status_code == 400
+    assert 'already registered' in response.get_json()['error']
+
+def test_login_logout(client):
+    """Test user login and logout."""
+    # First, register a user to test with
+    client.post('/api/register', json={'username': 'loginuser', 'password': 'password'})
+
+    # Test successful login
+    response = client.post('/api/login', json={
+        'username': 'loginuser',
+        'password': 'password'
+    })
+    assert response.status_code == 200
+    assert 'Logged in successfully' in response.get_json()['message']
+
+    # After login, a session cookie should be set.
+    # We can check this by making a request to a protected route.
+    response = client.get('/api/skills')
+    assert response.status_code == 200 # Should succeed
+
+    # Test logout
+    response = client.get('/api/logout')
+    assert response.status_code == 200
+
+    # After logout, the session should be cleared.
+    response = client.get('/api/skills')
+    assert response.status_code == 401 # Should fail with Unauthorized
+
+def test_login_invalid_credentials(client):
+    """Test login with incorrect credentials."""
+    client.post('/api/register', json={'username': 'creduser', 'password': 'password'})
+
+    # Test with incorrect password
+    response = client.post('/api/login', json={
+        'username': 'creduser',
+        'password': 'wrongpassword'
+    })
+    assert response.status_code == 400
+    assert 'Incorrect password' in response.get_json()['error']
+
+    # Test with incorrect username
+    response = client.post('/api/login', json={
+        'username': 'wronguser',
+        'password': 'password'
+    })
+    assert response.status_code == 400
+    assert 'Incorrect username' in response.get_json()['error']
+
+
+# --- API Test Cases ---
 
 def test_get_skills_success(client):
     """
