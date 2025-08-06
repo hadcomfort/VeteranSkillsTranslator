@@ -1,0 +1,55 @@
+# ==============================================================================
+#  Docker Compose Configuration for Military Skills Translator
+# ==============================================================================
+#
+#  DESCRIPTION:
+#  This file orchestrates the services required to run the application using
+#  Docker. It simplifies the process of building images, running containers,
+#  and managing networking and volumes.
+#
+#  USAGE (from project root):
+#  - To build and start the services: `docker-compose up --build`
+#  - To run in detached mode: `docker-compose up -d`
+#  - To stop the services: `docker-compose down`
+#  - To run one-off commands (like the import script):
+#    `docker-compose run --rm web python scripts/import_data.py`
+#
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  web:
+    # --- Build Configuration ---
+    # Tells Docker Compose to build the image from the Dockerfile in the
+    # current directory.
+    build: .
+
+    # --- Container Configuration ---
+    # Sets the name of the container for easier identification.
+    container_name: military_translator_web
+
+    # --- Port Mapping ---
+    # Maps port 5000 on the host to port 5000 in the container, allowing you
+    # to access the web application at http://localhost:5000.
+    ports:
+      - "5000:5000"
+
+    # --- Volume Mounting ---
+    # Volumes are used for persisting data and enabling live-reloading.
+    # - The first volume mounts the entire project directory into the /app
+    #   directory in the container. Changes made to your local code will be
+    #   immediately reflected in the container, which is ideal for development.
+    # - The second volume mounts the 'instance' folder. This ensures that the
+    #   SQLite database file is persisted on the host machine, so it doesn't
+    #   get deleted when the container is stopped or removed.
+    volumes:
+      - .:/app
+      - ./instance:/app/instance
+
+    # --- Environment Variables ---
+    # Loads environment variables from the specified file, making the
+    # configuration from your .env file available to the application inside
+    # the container.
+    env_file:
+      - .env

@@ -6,7 +6,9 @@
 #  - pytest: The testing framework used for our automated unit tests.
 #  - python-dotenv: Used to load environment variables from the .env file,
 #    allowing for clean separation of configuration from code.
+#  - gunicorn: A production-ready WSGI server used to run the Flask app.
 #
 Flask
 pytest
 python-dotenv
+gunicorn
